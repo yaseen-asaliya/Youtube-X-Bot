@@ -1,0 +1,8 @@
+django>=4.2
+djangorestframework
+anthropic
+tweepy
+feedparser
+boto3
+python-dotenv
+zappa

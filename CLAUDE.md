@@ -39,16 +39,16 @@ venv\Scripts\activate          # Windows
 source venv/bin/activate       # macOS/Linux
 
 # 2. Install dependencies
-pip install -r requirements.txt
+pip install -r bot/docs/requirements.txt
 
 # 3. Copy and fill in environment variables
-cp .env.example .env
+cp bot/docs/.env.example .env
 
 # 4. Run Django migrations
 python manage.py migrate
 
 # 5. Trigger the pipeline once + start approval server locally
-python local_server.py
+python -m bot.services.local_server
 ```
 
 For local approve/reject testing, expose the Django server with [ngrok](https://ngrok.com) and set `APPROVAL_BASE_URL` to the ngrok URL.
@@ -63,15 +63,20 @@ bash deploy.sh   # installs deps, migrates, deploys to AWS Lambda via Zappa
 
 ```
 Youtube-X-Bot/
-├── services/               ← all business logic
-│   ├── handler.py          ← Lambda entry point
-│   ├── local_server.py     ← local dev runner
-│   ├── ai.py               ← Claude tweet generation
-│   ├── youtube.py          ← YouTube RSS polling
-│   ├── x_poster.py         ← Twitter/X posting via Tweepy
-│   ├── notify.py           ← Amazon SES approval email
-│   └── token_store.py      ← AWS SSM Parameter Store
-├── bot/                    ← Django app (webhook endpoints)
+├── bot/                    ← Django app
+│   ├── services/           ← all business logic
+│   │   ├── handler.py      ← Lambda entry point
+│   │   ├── local_server.py ← local dev runner
+│   │   ├── ai.py           ← Claude tweet generation
+│   │   ├── youtube.py      ← YouTube RSS polling
+│   │   ├── x_poster.py     ← Twitter/X posting via Tweepy
+│   │   ├── notify.py       ← Amazon SES approval email
+│   │   └── token_store.py  ← AWS SSM Parameter Store
+│   ├── docs/
+│   │   ├── architecture.png  ← system architecture diagram
+│   │   ├── api.md            ← API reference
+│   │   ├── requirements.txt  ← Python dependencies
+│   │   └── .env.example      ← environment variable template
 │   ├── models.py           ← PendingApproval model
 │   ├── views.py            ← approve / reject / health views
 │   ├── urls.py
@@ -81,11 +86,8 @@ Youtube-X-Bot/
 │   ├── urls.py
 │   └── wsgi.py
 ├── manage.py
-├── docs/
-│   ├── architecture.png    ← system architecture diagram
-│   └── api.md              ← API reference
-├── requirements.txt
+
 ├── deploy.sh
-├── .env.example
+
 └── .gitignore
 ```

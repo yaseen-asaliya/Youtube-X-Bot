@@ -3,8 +3,8 @@ Local development entry point.
 Runs the Lambda pipeline once, then starts Django for approval webhook testing.
 
 Usage:
-    python -m services.local_server                    # trigger + start server
-    python -m services.local_server --only-server      # skip trigger, just serve
+    python -m bot.services.local_server                    # trigger + start server
+    python -m bot.services.local_server --only-server      # skip trigger, just serve
 """
 import os
 import sys
@@ -17,7 +17,7 @@ django.setup()
 
 
 def run_pipeline():
-    from services.handler import lambda_handler
+    from bot.services.handler import lambda_handler
     result = lambda_handler({}, None)
     print(result)
 

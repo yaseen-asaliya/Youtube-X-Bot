@@ -4,7 +4,7 @@ A serverless automation pipeline on AWS that monitors YouTube RSS feeds, generat
 
 ## Architecture
 
-![System Architecture](docs/architecture.png)
+![System Architecture](bot/docs/architecture.png)
 
 ### How it works
 
@@ -22,10 +22,10 @@ A serverless automation pipeline on AWS that monitors YouTube RSS feeds, generat
 
 ```bash
 python -m venv venv && venv\Scripts\activate
-pip install -r requirements.txt
-cp .env.example .env        # fill in all keys
+pip install -r bot/docs/requirements.txt
+cp bot/docs/.env.example .env   # fill in all keys
 python manage.py migrate
-python -m services.local_server      # trigger pipeline + start approval server
+python -m bot.services.local_server      # trigger pipeline + start approval server
 ```
 
 Use [ngrok](https://ngrok.com) to expose the local server and set `APPROVAL_BASE_URL` in `.env` to test approve/reject links end-to-end.
@@ -46,7 +46,7 @@ Use [ngrok](https://ngrok.com) to expose the local server and set `APPROVAL_BASE
 
 ## Environment Variables
 
-Copy `.env.example` to `.env` and fill in:
+Copy `bot/docs/.env.example` to `.env` and fill in:
 
 ```
 ANTHROPIC_API_KEY
@@ -66,4 +66,4 @@ bash deploy.sh
 
 ## Docs
 
-- [API Reference](docs/api.md) — all external APIs used
+- [API Reference](bot/docs/api.md) — all external APIs used

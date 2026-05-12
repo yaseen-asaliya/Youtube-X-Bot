@@ -2,8 +2,8 @@ from django.http import HttpResponse, JsonResponse
 from django.views.decorators.http import require_GET
 
 from bot.models import PendingApproval
-from services.x_poster import post_tweet
-from services.token_store import set_last_posted_video_id
+from bot.services.x_poster import post_tweet
+from bot.services.token_store import set_last_posted_video_id
 
 
 @require_GET

@@ -5,10 +5,10 @@ import django
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "youtube_x_bot.settings")
 django.setup()
 
-from services.youtube import get_latest_video
-from services.ai import generate_tweet_draft
-from services.notify import send_approval_email
-from services.token_store import get_last_posted_video_id
+from bot.services.youtube import get_latest_video
+from bot.services.ai import generate_tweet_draft
+from bot.services.notify import send_approval_email
+from bot.services.token_store import get_last_posted_video_id
 from bot.models import PendingApproval
 
 

@@ -34,7 +34,6 @@ A serverless automation pipeline on AWS that monitors YouTube RSS feeds, generat
 python -m venv venv && venv\Scripts\activate
 pip install -r bot/docs/requirements.txt
 cp bot/docs/.env.example .env   # fill in all keys
-python manage.py migrate
 python -m bot.services.local_server      # trigger pipeline + start approval server
 ```
 
@@ -56,24 +55,22 @@ Use [ngrok](https://ngrok.com) to expose the local server and set `APPROVAL_BASE
 
 ## Environment Variables
 
-Copy `bot/docs/.env.example` to `.env` and fill in:
+Copy `bot/docs/.env.example` to `.env` and fill in.
 
-```
-ANTHROPIC_API_KEY
-TWITTER_API_KEY / SECRET / ACCESS_TOKEN / ACCESS_TOKEN_SECRET
-YOUTUBE_CHANNEL_ID
-AWS_REGION
-SES_SENDER_EMAIL / SES_APPROVER_EMAIL
-APPROVAL_BASE_URL
-DJANGO_SECRET_KEY
-```
 
-## Deployment
+## What I Learned
 
-```bash
-bash deploy.sh
-```
+- **SSM as a zero-config state store** — for a low-traffic serverless pipeline, SSM Parameter Store eliminates the need for a database entirely; it's just enough persistence without the operational overhead
+- **Human-in-the-loop via email links is deceptively simple** — one-click approve/reject over SES + API Gateway is trivially easy to implement and keeps a human meaningfully in control of what gets published
+- **Zappa removes most of the Lambda friction** — packaging a Django app as a Lambda function with API Gateway in front of it is nearly a one-liner once Zappa is configured
+- **Building with Claude compresses the feedback loop dramatically** — the full working pipeline (architecture → code → deployment) came together in ~6 hours, with Claude handling first drafts of everything from IAM policy to tweet prompt engineering
 
-## Docs
+## At Scale, I Would...
 
-- [API Reference](bot/docs/api.md) — all external APIs used
+- **Replace SSM with DynamoDB** for pending approvals — SSM has API rate limits and isn't designed for high-frequency reads/writes; DynamoDB scales without throttling and supports TTL-based expiry natively
+- **Add token expiry** — approval links currently never expire; at scale a stale link clicked days later could post outdated content, so a TTL field on the approval record is essential
+- **Add a Dead Letter Queue (SQS DLQ)** on the Lambda so failed pipeline runs don't silently disappear — errors surface for retry or alerting
+- **Support multiple channels** via a DynamoDB config table rather than a single `YOUTUBE_CHANNEL_ID` env var, letting the same pipeline fan out across many creators
+- **Add CloudWatch alarms** for Lambda error rate, SES bounce/complaint rate, and approval links that go unclicked for >24 hours
+- **Move to Secrets Manager** over SSM SecureString for credentials — better rotation support and audit logging out of the box
+

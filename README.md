@@ -1,7 +1,6 @@
 # Youtube-X-Bot
 
-A serverless automation pipeline on AWS that monitors YouTube RSS feeds, generates tweet drafts with Claude AI, and publishes them to X (Twitter) after human approval via email.
-
+A serverless automation pipeline on AWS that monitors YouTube RSS feeds, generates tweet drafts with Claude AI, and publishes them to X (Twitter) after human approval via email. Built and deployed with the help of Claude — from architecture design to deployment — completing the full project in just 6 hours of work.
 ## Architecture
 
 ![System Architecture](bot/docs/architecture.png)

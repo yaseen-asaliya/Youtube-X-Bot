@@ -35,9 +35,36 @@ def get_token(key: str) -> str | None:
         raise
 
 
+def delete_token(key: str) -> None:
+    try:
+        _client().delete_parameter(Name=f"{PARAM_PREFIX}/{key}")
+    except ClientError as e:
+        if e.response["Error"]["Code"] != "ParameterNotFound":
+            raise
+
+
 def get_last_posted_video_id() -> str | None:
     return get_token("last_video_id")
 
 
 def set_last_posted_video_id(video_id: str) -> None:
     put_token("last_video_id", video_id, secure=False)
+
+
+def save_pending_approval(pending_id: str, video_id: str, video_title: str, tweet_text: str) -> None:
+    import json
+    put_token(
+        f"pending/{pending_id}",
+        json.dumps({"video_id": video_id, "video_title": video_title, "tweet_text": tweet_text}),
+        secure=False,
+    )
+
+
+def get_pending_approval(pending_id: str) -> dict | None:
+    import json
+    value = get_token(f"pending/{pending_id}")
+    return json.loads(value) if value else None
+
+
+def delete_pending_approval(pending_id: str) -> None:
+    delete_token(f"pending/{pending_id}")

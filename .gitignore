@@ -23,6 +23,7 @@ media/
 
 # Zappa
 zappa_settings.json
+*.zip
 handler.zip
 *.zip
 

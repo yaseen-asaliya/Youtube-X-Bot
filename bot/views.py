@@ -1,44 +1,39 @@
-from django.http import HttpResponse, JsonResponse
-from django.views.decorators.http import require_GET
+from rest_framework import viewsets, status
+from rest_framework.decorators import action
+from rest_framework.response import Response
 
-from bot.models import PendingApproval
 from bot.services.x_poster import post_tweet
-from bot.services.token_store import set_last_posted_video_id
+from bot.services.token_store import (
+    get_pending_approval,
+    delete_pending_approval,
+    set_last_posted_video_id,
+)
 
 
-@require_GET
-def approve(request, pending_id: str):
-    try:
-        entry = PendingApproval.objects.get(pending_id=pending_id)
-    except PendingApproval.DoesNotExist:
-        return HttpResponse("Invalid or expired approval link.", status=404)
+class ApprovalViewSet(viewsets.ViewSet):
 
-    post_tweet(entry.tweet_text)
-    set_last_posted_video_id(entry.video_id)
-    entry.delete()
+    @action(detail=False, methods=["get"], url_path="approve/(?P<pending_id>[^/.]+)")
+    def approve(self, _request, pending_id: str):
+        entry = get_pending_approval(pending_id)
+        if not entry:
+            return Response("Invalid or expired approval link.", status=status.HTTP_404_NOT_FOUND)
 
-    return HttpResponse(
-        f"Tweet posted successfully!\n\n{entry.tweet_text}",
-        content_type="text/plain",
-    )
+        post_tweet(entry["tweet_text"])
+        set_last_posted_video_id(entry["video_id"])
+        delete_pending_approval(pending_id)
 
+        return Response(f"Tweet posted successfully!\n\n{entry['tweet_text']}")
 
-@require_GET
-def reject(request, pending_id: str):
-    try:
-        entry = PendingApproval.objects.get(pending_id=pending_id)
-    except PendingApproval.DoesNotExist:
-        return HttpResponse("Invalid or expired approval link.", status=404)
+    @action(detail=False, methods=["get"], url_path="reject/(?P<pending_id>[^/.]+)")
+    def reject(self, _request, pending_id: str):
+        entry = get_pending_approval(pending_id)
+        if not entry:
+            return Response("Invalid or expired approval link.", status=status.HTTP_404_NOT_FOUND)
 
-    title = entry.video_title
-    entry.delete()
+        delete_pending_approval(pending_id)
 
-    return HttpResponse(
-        f"Tweet rejected for: {title}",
-        content_type="text/plain",
-    )
+        return Response(f"Tweet rejected for: {entry['video_title']}")
 
-
-@require_GET
-def health(request):
-    return JsonResponse({"status": "ok"})
+    @action(detail=False, methods=["get"])
+    def health(self, _request):
+        return Response({"status": "ok"})

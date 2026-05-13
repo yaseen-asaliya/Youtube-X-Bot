@@ -1,8 +1,7 @@
-from django.urls import path
-from bot import views
+from rest_framework.routers import DefaultRouter
+from bot.views import ApprovalViewSet
 
-urlpatterns = [
-    path("approve/<str:pending_id>/", views.approve, name="approve"),
-    path("reject/<str:pending_id>/", views.reject, name="reject"),
-    path("health/", views.health, name="health"),
-]
+router = DefaultRouter()
+router.register(r"", ApprovalViewSet, basename="approval")
+
+urlpatterns = router.urls

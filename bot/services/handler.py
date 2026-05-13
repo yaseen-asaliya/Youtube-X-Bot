@@ -8,8 +8,7 @@ django.setup()
 from bot.services.youtube import get_latest_video
 from bot.services.ai import generate_tweet_draft
 from bot.services.notify import send_approval_email
-from bot.services.token_store import get_last_posted_video_id
-from bot.models import PendingApproval
+from bot.services.token_store import get_last_posted_video_id, save_pending_approval
 
 
 def lambda_handler(event: dict, context) -> dict:
@@ -31,13 +30,7 @@ def lambda_handler(event: dict, context) -> dict:
     print(f"Generated tweet:\n{tweet}")
 
     pending_id = str(uuid.uuid4())
-    PendingApproval.objects.create(
-        pending_id=pending_id,
-        video_id=video["id"],
-        video_title=video["title"],
-        video_url=video["url"],
-        tweet_text=tweet,
-    )
+    save_pending_approval(pending_id, video["id"], video["title"], tweet)
 
     send_approval_email(video, tweet, pending_id)
 

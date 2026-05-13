@@ -6,6 +6,17 @@ A serverless automation pipeline on AWS that monitors YouTube RSS feeds, generat
 
 ![System Architecture](bot/docs/architecture.png)
 
+
+### Post Tweet Approval Email
+
+![Approval Email](bot/docs/email-template.png)
+
+### Tweet
+
+![Approve Response](bot/docs/tweet-result.png)
+
+
+
 ### How it works
 
 | Step | Component | Action |
